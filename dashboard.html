@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BStock Analytics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#0f1117; --bg2:#1a1d27; --bg3:#222536;
+  --border:#2e3247; --text:#e8eaf0; --muted:#8b8fa8;
+  --blue:#4f8ef7; --green:#34c98a; --amber:#f5a623;
+  --red:#f05454; --purple:#a78bfa; --teal:#2dd4bf;
+  --r:10px; --font:'Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-size:17px;font-weight:600;color:var(--blue);}
+.logo span{color:var(--text);font-weight:400;}
+#ts{color:var(--muted);font-size:12px;}
+#btn-reload{background:var(--blue);color:#fff;border:none;border-radius:8px;
+  padding:7px 16px;cursor:pointer;font-size:13px;font-weight:500;}
+main{max-width:1400px;margin:0 auto;padding:20px;}
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:10px;padding:4px;flex-wrap:wrap;width:fit-content;}
+.tab{padding:8px 16px;border-radius:7px;cursor:pointer;font-size:13px;
+  color:var(--muted);border:none;background:transparent;transition:all .15s;}
+.tab.active{background:var(--blue);color:#fff;font-weight:500;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;}
+.kpi-val{font-size:26px;font-weight:700;line-height:1;margin-bottom:5px;}
+.kpi-lbl{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.kpi.blue{border-top:3px solid var(--blue);}
+.kpi.green{border-top:3px solid var(--green);}
+.kpi.amber{border-top:3px solid var(--amber);}
+.kpi.red{border-top:3px solid var(--red);}
+.kpi.purple{border-top:3px solid var(--purple);}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;}
+.card-title{font-size:14px;font-weight:600;margin-bottom:14px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:900px){.g2{grid-template-columns:1fr;}}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;color:var(--muted);font-weight:500;font-size:11px;
+  text-transform:uppercase;letter-spacing:.4px;padding:6px 10px 10px;
+  border-bottom:1px solid var(--border);}
+td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.03);}
+.num{font-variant-numeric:tabular-nums;font-weight:500;}
+.muted{color:var(--muted);}
+a{color:var(--blue);text-decoration:none;}
+a:hover{text-decoration:underline;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.b-green{background:rgba(52,201,138,.15);color:var(--green);}
+.b-red{background:rgba(240,84,84,.15);color:var(--red);}
+.b-amber{background:rgba(245,166,35,.15);color:var(--amber);}
+.b-blue{background:rgba(79,142,247,.15);color:var(--blue);}
+.b-muted{background:var(--bg3);color:var(--muted);}
+.search-box{background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:8px 14px;font-size:13px;width:260px;outline:none;}
+.search-box:focus{border-color:var(--blue);}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.bar-label{width:160px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;background:var(--bg3);border-radius:4px;height:10px;overflow:hidden;}
+.bar-fill{height:10px;border-radius:4px;transition:width .3s;}
+.bar-val{width:70px;text-align:right;font-size:12px;color:var(--muted);}
+.empty{text-align:center;padding:40px;color:var(--muted);}
+.tag{display:inline-block;padding:1px 7px;border-radius:4px;font-size:11px;
+  background:var(--bg3);color:var(--muted);border:1px solid var(--border);}
+.puja-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">BStock <span>Analytics</span></div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span id="ts"></span>
+    <button id="btn-reload" onclick="cargar()">Actualizar</button>
+  </div>
+</header>
+<main>
+  <div class="tabs">
+    <button class="tab active" data-tab="subasta">Ultima subasta</button>
+    <button class="tab" data-tab="pujas">Mis pujas perdidas</button>
+    <button class="tab" data-tab="referencia">Referencia de precios</button>
+    <button class="tab" data-tab="oportunidades">Oportunidades</button>
+    <button class="tab" data-tab="subieron">Subieron de precio</button>
+    <button class="tab" data-tab="tendencias">Tendencias</button>
+  </div>
+  <div id="tab-subasta"     class="tab-panel active"></div>
+  <div id="tab-pujas"       class="tab-panel"></div>
+  <div id="tab-referencia"  class="tab-panel"></div>
+  <div id="tab-oportunidades" class="tab-panel"></div>
+  <div id="tab-subieron"    class="tab-panel"></div>
+  <div id="tab-tendencias"  class="tab-panel"></div>
+</main>
+
+<script>
+let D = null;
+let chartTend = null;
+
+function fmt$(n){ return n==null?'—':'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function fmtU$(n){ return n==null?'—':'$'+Number(n).toFixed(2); }
+function fmtPct(n){ return (n>0?'+':'')+Number(n).toFixed(1)+'%'; }
+function bstock(id){ return `https://bstock.com/buy/listings/details/${id}`; }
+
+function gradeBadge(g){
+  if(!g||g==='N/A') return `<span class="badge b-muted">N/A</span>`;
+  if(g.includes('AA')) return `<span class="badge b-green">${g}</span>`;
+  if(g.startsWith('A+')) return `<span class="badge b-green">${g}</span>`;
+  if(g.startsWith('A')) return `<span class="badge b-blue">${g}</span>`;
+  return `<span class="badge b-amber">${g}</span>`;
+}
+
+function pujasBadge(n){
+  if(!n||n===0) return `<span class="muted">0</span>`;
+  if(n>=5) return `<span class="badge b-red">${n}</span>`;
+  if(n>=3) return `<span class="badge b-amber">${n}</span>`;
+  return `<span class="badge b-muted">${n}</span>`;
+}
+
+// ─── TAB 1: ULTIMA SUBASTA ───────────────────────────────────────────────────
+function buildSubasta(){
+  const u = D.ultima_subasta || {};
+  if(!u.fecha_subasta){ document.getElementById('tab-subasta').innerHTML='<div class="empty">Sin datos de subasta cerrada.</div>'; return; }
+
+  const maxPrecio = Math.max(...(u.por_modelo||[]).map(r=>r.valor_total||0), 1);
+
+  document.getElementById('tab-subasta').innerHTML = `
+  <div class="kpis">
+    <div class="kpi blue"><div class="kpi-val" style="color:var(--blue)">${u.total_cerrados||0}</div><div class="kpi-lbl">Lotes cerrados</div></div>
+    <div class="kpi green"><div class="kpi-val" style="color:var(--green)">${fmt$(u.valor_total)}</div><div class="kpi-lbl">Valor total subastado</div></div>
+    <div class="kpi amber"><div class="kpi-val" style="color:var(--amber)">${fmtU$(u.precio_prom)}/u</div><div class="kpi-lbl">Precio promedio/u</div></div>
+    <div class="kpi red"><div class="kpi-val" style="color:var(--red)">${u.abiertos||0}</div><div class="kpi-lbl">Aun abiertos (proxima subasta)</div></div>
+    <div class="kpi purple"><div class="kpi-val" style="color:var(--purple)">${(u.unidades_total||0).toLocaleString()}</div><div class="kpi-lbl">Unidades totales</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Valor total por modelo — ${u.dia_semana||''} ${u.fecha_subasta||''}</div>
+    ${(u.por_modelo||[]).map(r=>`
+      <div class="bar-row">
+        <div class="bar-label">${r.modelo||'N/A'}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round((r.valor_total/maxPrecio)*100)}%;background:var(--blue);"></div></div>
+        <div class="bar-val">${fmt$(r.valor_total)}</div>
+      </div>`).join('')}
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title" style="color:var(--green)">Mejores precios (mas barato/u)</div>
+      <table>
+        <tr><th>Modelo</th><th>Capacidad</th><th>Grado</th><th>$/u</th><th>Uds</th><th>Pujas</th><th></th></tr>
+        ${(u.mejores||[]).map(r=>`
+        <tr>
+          <td>${r.modelo||'N/A'}</td>
+          <td class="muted">${r.capacidad||'N/A'}</td>
+          <td>${gradeBadge(r.grado)}</td>
+          <td class="num" style="color:var(--green)">${fmtU$(r.precio_unitario_promedio)}</td>
+          <td class="muted">${r.cantidad_total||0}</td>
+          <td>${pujasBadge(r.numero_pujas)}</td>
+          <td><a href="${bstock(r.listing_id)}" target="_blank">Ver</a></td>
+        </tr>`).join('')}
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red)">Subieron vs su promedio historico</div>
+      ${(u.subieron_vs_hist||[]).length === 0
+        ? `<div class="empty" style="padding:20px;">No hay datos historicos suficientes para comparar aun. Se necesitan subastas previas del mismo modelo+capacidad+grado.</div>`
+        : `<table>
+        <tr><th>Modelo</th><th>Capacidad</th><th>Grado</th><th>$/u esta vez</th><th>Hist. prom $/u</th><th>Subio</th><th>Pujas</th><th></th></tr>
+        ${(u.subieron_vs_hist||[]).map(r=>`
+        <tr>
+          <td>${r.modelo||'N/A'}</td>
+          <td class="muted">${r.capacidad||'N/A'}</td>
+          <td>${gradeBadge(r.grado)}</td>
+          <td class="num" style="color:var(--red)">${fmtU$(r.precio_unitario_promedio)}</td>
+          <td class="num muted">${fmtU$(r.hist_avg)}</td>
+          <td><span class="badge b-red">+${r.subio_pct}%</span></td>
+          <td>${pujasBadge(r.numero_pujas)}</td>
+          <td><a href="${bstock(r.listing_id)}" target="_blank">Ver</a></td>
+        </tr>`).join('')}
+      </table>`}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="color:var(--amber)">Lotes con mas competencia (mas pujados)</div>
+    <table>
+      <tr><th>Modelo</th><th>Capacidad</th><th>Grado</th><th>Pujas</th><th>$/u</th><th>Uds</th><th></th></tr>
+      ${(u.mas_pujados||[]).map(r=>`
+      <tr>
+        <td>${r.modelo||'N/A'}</td>
+        <td class="muted">${r.capacidad||'N/A'}</td>
+        <td>${gradeBadge(r.grado)}</td>
+        <td>${pujasBadge(r.numero_pujas)}</td>
+        <td class="num">${fmtU$(r.precio_unitario_promedio)}</td>
+        <td class="muted">${r.cantidad_total||0}</td>
+        <td><a href="${bstock(r.listing_id)}" target="_blank">Ver</a></td>
+      </tr>`).join('')}
+    </table>
+  </div>`;
+}
+
+// ─── TAB 2: MIS PUJAS PERDIDAS ───────────────────────────────────────────────
+function buildPujas(){
+  const mp = D.mis_pujas || {};
+  const perdidas = mp.perdidas || [];
+  const ganadas  = mp.ganadas  || [];
+  const activas  = mp.activas  || [];
+  const sc       = mp.status_count || {};
+
+  if(!mp.total){
+    document.getElementById('tab-pujas').innerHTML = `
+    <div class="card">
+      <div class="card-title">Mis pujas perdidas</div>
+      <div class="empty">
+        <p style="margin-bottom:12px;">No hay datos de pujas aun.</p>
+        <p style="font-size:12px;color:var(--muted);">Corra <code>python fetch_mis_pujas.py</code> para descargar tu historial de pujas desde BStock.</p>
+      </div>
+    </div>`;
+    return;
+  }
+
+  const totalDiff   = perdidas.reduce((s,r)=>s+(r.diferencia||0),0);
+  const cercanas    = perdidas.filter(r=>(r.diferencia||0)>0&&r.diferencia<500).length;
+  const fechaDesc   = (mp.fecha_descarga||'').replace('T',' ');
+
+  const subieron = (D.ultima_subasta?.subieron_todos || []);
+  const subioMap = {};
+  for(const s of subieron){
+    const k = `${s.modelo}|${s.capacidad}|${s.grado}`;
+    subioMap[k] = s;
+  }
+
+  function getSubio(r){
+    return subioMap[`${r.modelo}|${r.capacidad}|${r.grado}`] || null;
+  }
+
+  const perdidasYSubieron = perdidas.filter(r => getSubio(r));
+  const modelosPujas = [...new Set(perdidas.map(r=>r.modelo).filter(Boolean))].sort();
+
+  function rowsPujas(lista, showSubioCol=false){
+    if(!lista.length) return `<tr><td colspan="${showSubioCol?11:10}" class="muted" style="text-align:center;padding:20px;">Sin resultados</td></tr>`;
+    return lista.map(r=>{
+      const diff = r.diferencia || 0;
+      const cls  = diff>0&&diff<200?'b-amber':'b-red';
+      const nombreModelo = r.modelo || r.titulo?.split(' - ')[0] || 'N/A';
+      const cap  = r.capacidad && !r.capacidad.startsWith('MIXTO') ? r.capacidad : (r.titulo?.match(/\d+GB/)?.[0]||r.capacidad||'N/A');
+      const sub  = showSubioCol ? getSubio(r) : null;
+      const uds  = r.unidades || 0;
+      const pxU  = uds && r.precio_ganador ? fmtU$(r.precio_ganador / uds) : '—';
+      const miPxU= uds && r.mi_puja ? fmtU$(r.mi_puja / uds) : '—';
+      return `<tr${sub?' style="background:rgba(245,166,35,.07)"':''}>
+        <td>${nombreModelo}${sub?` <span class="badge b-amber" style="font-size:10px;">+${sub.subio_pct}%</span>`:''}</td>
+        <td class="muted">${cap}</td>
+        <td>${gradeBadge(r.grado)}</td>
+        <td class="num" style="color:var(--teal);" title="Mi $/u: ${miPxU}">${pxU}</td>
+        <td class="num">${fmt$(r.mi_puja)}</td>
+        <td class="num" style="color:var(--red)">${fmt$(r.precio_ganador)}</td>
+        <td>${diff>0?`<span class="badge ${cls}">+${fmt$(diff)}</span>`:'<span class="muted">—</span>'}</td>
+        ${showSubioCol?`<td style="color:var(--amber);font-size:12px;">${sub?`${fmtU$(sub.precio_unitario_promedio)} <span class="muted">${sub.capacidad||''} ${sub.grado||''}</span>`:'—'}</td>`:''}
+        <td class="muted">${uds||0}</td>
+        <td class="muted">${r.fecha_cierre||''} ${r.hora_cierre||''}</td>
+        <td><a href="${bstock(r.listing_id)}" target="_blank">Ver</a></td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('tab-pujas').innerHTML = `
+  <div class="kpis">
+    <div class="kpi red"><div class="kpi-val" style="color:var(--red)">${sc.lost||perdidas.length}</div><div class="kpi-lbl">Subastas perdidas</div></div>
+    <div class="kpi green"><div class="kpi-val" style="color:var(--green)">${sc.won||ganadas.length}</div><div class="kpi-lbl">Subastas ganadas</div></div>
+    <div class="kpi amber"><div class="kpi-val" style="color:var(--amber)">${activas.length}</div><div class="kpi-lbl">Pujas activas ahora</div></div>
+    <div class="kpi purple"><div class="kpi-val" style="color:var(--purple)">${cercanas}</div><div class="kpi-lbl">Perdiste por menos de $500</div></div>
+    <div class="kpi blue"><div class="kpi-val" style="color:var(--blue)">${fmt$(totalDiff)}</div><div class="kpi-lbl">Dinero total que te falto</div></div>
+  </div>
+
+  ${activas.length ? `
+  <div class="card">
+    <div class="card-title" style="color:var(--amber)">Pujas activas ahora mismo (${activas.length})</div>
+    <table>
+      <tr><th>Subasta</th><th>Estado</th><th>$/u actual</th><th>Mi max bid</th><th>QTY</th><th>Grado</th><th>Cierre ET</th><th></th></tr>
+      ${activas.map(r=>{
+        const qty = r.unidades||0;
+        const pxU = qty&&r.mi_puja ? fmtU$(r.mi_puja/qty) : '—';
+        const nombre = r.modelo || r.titulo?.split(' - ')[1] || r.titulo?.split(' - ')[0] || 'N/A';
+        const estadoBadge = r.status==='WINNING'
+          ? `<span class="badge b-green">WINNING</span>`
+          : r.status==='LOSING'
+          ? `<span class="badge b-red">LOSING</span>`
+          : `<span class="badge b-muted">${r.status||'N/A'}</span>`;
+        return `<tr>
+          <td>
+            <div style="font-weight:600;">${nombre}</div>
+            <div class="muted" style="font-size:11px;">${r.capacidad||''}</div>
+          </td>
+          <td>${estadoBadge}</td>
+          <td class="num" style="color:var(--teal)">${pxU}</td>
+          <td class="num" style="color:var(--amber)">${fmt$(r.mi_puja)}</td>
+          <td class="muted">${qty||'—'}</td>
+          <td>${gradeBadge(r.grado)}</td>
+          <td class="muted">${r.fecha_cierre||''} ${r.hora_cierre||''}</td>
+          <td><a href="${bstock(r.listing_id)}" target="_blank">Ver</a></td>
+        </tr>`;
+      }).join('')}
+    </table>
+  </div>` : ''}
+
+  <div class="card" style="${perdidasYSubieron.length?'border-color:var(--amber)':''}">
+    <div class="card-title" style="color:var(--amber)">Modelos que perdiste y subieron de precio — mismo modelo+capacidad+grado</div>
+    ${perdidasYSubieron.length ? `
+    <p class="muted" style="font-size:12px;margin-bottom:12px;">Estos lotes los perdiste y en la ultima subasta el mismo modelo/capacidad/grado se vendio por encima de su promedio historico. Considera subir tu bid.</p>
+    <div style="overflow-x:auto;">
+    <table>
+      <tr><th>Modelo</th><th>Capacidad</th><th>Grado</th><th>$/u final</th><th>Mi max bid</th><th>Precio final</th><th>Te falto</th><th>$/u ultima subasta</th><th>Uds</th><th>Fecha</th><th></th></tr>
+      ${rowsPujas(perdidasYSubieron, true)}
+    </table>
+    </div>` : `
+
+    <p class="muted" style="font-size:13px;padding:8px 0;">
+      Sin coincidencias exactas por ahora. Los lotes que subieron en la ultima subasta son grado <strong>C(T)</strong> mientras tus pujas son grado <strong>B(T)+</strong>.
+      A medida que se acumulen mas subastas con los mismos modelos/capacidad/grado apareceran aqui.
+    </p>`}
+  </div>
+
+  <div class="card">
+    <div class="card-title">Todas las pujas perdidas (${perdidas.length}) &nbsp;<span class="muted" style="font-size:11px;font-weight:400;">Actualizado: ${fechaDesc}</span></div>
+    <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <input class="search-box" id="pujas-search" placeholder="Buscar titulo o modelo..." oninput="filtrarPujas()">
+      <select id="pujas-modelo" onchange="filtrarPujas()" style="background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;">
+        <option value="">Todos los modelos</option>
+        ${modelosPujas.map(m=>`<option value="${m}">${m}</option>`).join('')}
+      </select>
+    </div>
+    <div style="overflow-x:auto;">
+    <table id="pujas-table">
+      <tr><th>Modelo</th><th>Capacidad</th><th>Grado</th><th>$/u final</th><th>Mi max bid</th><th>Precio final</th><th>Te falto</th><th>Uds</th><th>Fecha / Hora ET</th><th></th></tr>
+      ${rowsPujas(perdidas)}
+    </table>
+    </div>
+  </div>`;
+
+  // guarda rows para filtrar
+  window._pujasData = perdidas;
+  window._rowsPujas = rowsPujas;
+}
+
+function filtrarPujas(){
+  const q  = (document.getElementById('pujas-search')?.value||'').toLowerCase();
+  const m  = document.getElementById('pujas-modelo')?.value||'';
+  const t  = document.getElementById('pujas-table');
+  if(!t) return;
+  let lista = window._pujasData||[];
+  if(q) lista = lista.filter(r=>(r.titulo||'').toLowerCase().includes(q)||(r.modelo||'').toLowerCase().includes(q));
+  if(m) lista = lista.filter(r=>r.modelo===m);
+  const tbody = t.querySelector('tbody') || t;
+  const rows = window._rowsPujas(lista);
+  // reemplazar todas las filas excepto header
+  const header = t.querySelector('tr');
+  t.innerHTML = '';
+  t.appendChild(header);
+  t.insertAdjacentHTML('beforeend', rows);
+}
+
+// ─── TAB 3: REFERENCIA DE PRECIOS ────────────────────────────────────────────
+function buildReferencia(){
+  const ref = D.referencia || [];
+  const modelos = [...new Set(ref.map(r=>r.modelo))].sort();
+
+  document.getElementById('tab-referencia').innerHTML = `
+  <div class="card">
+    <div class="card-title">Tabla de referencia historica — precios reales de cierre</div>
+    <div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <input class="search-box" id="ref-search" placeholder="Buscar modelo..." oninput="filtrarRef()">
+      <span class="muted" style="font-size:12px;">${ref.length} SKUs · Solo lotes CERRADO</span>
+    </div>
+    <div style="overflow-x:auto;">
+    <table id="ref-table">
+      <tr>
+        <th>Modelo</th><th>Capacidad</th><th>Grado</th>
+        <th>Promedio $/u</th><th>Minimo $/u</th><th>Maximo $/u</th>
+        <th>Subastas</th><th>Pujas prom</th><th>Ultima vez</th>
+      </tr>
+      ${ref.map(r=>`
+      <tr data-modelo="${(r.modelo||'').toLowerCase()}">
+        <td>${r.modelo||'N/A'}</td>
+        <td class="muted">${r.capacidad||'N/A'}</td>
+        <td>${gradeBadge(r.grado)}</td>
+        <td class="num" style="color:var(--blue)">${fmtU$(r.precio_prom)}</td>
+        <td class="num" style="color:var(--green)">${fmtU$(r.precio_min)}</td>
+        <td class="num" style="color:var(--red)">${fmtU$(r.precio_max)}</td>
+        <td class="muted">${r.num_subastas||0}</td>
+        <td class="muted">${r.pujas_prom!=null?Number(r.pujas_prom).toFixed(1):'—'}</td>
+        <td class="muted">${r.ultima_vez||'—'}</td>
+      </tr>`).join('')}
+    </table>
+    </div>
+  </div>`;
+}
+
+function filtrarRef(){
+  const q = document.getElementById('ref-search').value.toLowerCase();
+  document.querySelectorAll('#ref-table tr[data-modelo]').forEach(tr=>{
+    tr.style.display = tr.dataset.modelo.includes(q)?'':'none';
+  });
+}
+
+// ─── TAB 4: OPORTUNIDADES ────────────────────────────────────────────────────
+function buildOportunidades(){
+  const ops = D.oportunidades || [];
+  document.getElementById('tab-oportunidades').innerHTML = ops.length ? `
+  <div class="card">
+    <div class="card-title" style="color:var(--green)">Lotes que se fueron baratos (vs promedio historico)</div>
+    <p class="muted" style="font-size:12px;margin-bottom:14px;">Lotes cerrados con precio/u al menos 10% por debajo del promedio historico. Estos son los que alguien ganó barato.</p>
+    <table>
+      <tr><th>Modelo</th><th>Capacidad</th><th>Grado</th><th>Precio real $/u</th><th>Hist. prom $/u</th><th>Descuento</th><th>Pujas</th><th>Uds</th><th>Fecha</th></tr>
+      ${ops.map(r=>`
+      <tr>
+        <td>${r.modelo||'N/A'}</td>
+        <td class="muted">${r.capacidad||'N/A'}</td>
+        <td>${gradeBadge(r.grado)}</td>
+        <td class="num" style="color:var(--green)">${fmtU$(r.precio_u)}</td>
+        <td class="num muted">${fmtU$(r.hist_prom)}</td>
+        <td><span class="badge b-green">${fmtPct(r.descuento_pct)}</span></td>
+        <td>${pujasBadge(r.pujas)}</td>
+        <td class="muted">${r.unidades||0}</td>
+        <td class="muted">${r.dia||''} ${r.fecha||''}</td>
+      </tr>`).join('')}
+    </table>
+  </div>` : `<div class="card"><div class="empty">No hay oportunidades detectadas aun.<br><span class="muted" style="font-size:12px;">Se necesitan al menos 2 subastas del mismo modelo+capacidad+grado para comparar.</span></div></div>`;
+}
+
+// ─── TAB 5: SUBIERON DE PRECIO ───────────────────────────────────────────────
+function buildSubieron(){
+  const u = D.ultima_subasta || {};
+  const todos = u.subieron_todos || [];
+
+  document.getElementById('tab-subieron').innerHTML = `
+  <div class="card">
+    <div class="card-title">Lotes que subieron vs su promedio historico — ${u.dia_semana||''} ${u.fecha_subasta||''}</div>
+    <p class="muted" style="font-size:12px;margin-bottom:14px;">
+      Lotes donde el precio de cierre supero al menos 5% el promedio historico de ese modelo+capacidad+grado.
+      Esto indica alta competencia o demanda inusual.
+    </p>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+      <input class="search-box" id="sub-search" placeholder="Buscar modelo..." oninput="filtrarSubieron()" style="width:220px;">
+      <select id="sub-grado" onchange="filtrarSubieron()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 12px;font-size:13px;">
+        <option value="">Todos los grados</option>
+        <option>A+(T)</option><option>AA+(T)</option><option>A(T)</option><option>B+(T)</option><option>C(T)</option>
+      </select>
+      <span class="muted" style="font-size:12px;" id="sub-count">${todos.length} lotes</span>
+    </div>
+    ${todos.length === 0
+      ? `<div class="empty">Sin datos historicos suficientes para comparar. Se necesitan subastas previas del mismo modelo.</div>`
+      : `<div style="overflow-x:auto;">
+      <table id="sub-table">
+        <tr>
+          <th>Modelo</th><th>Capacidad</th><th>Grado</th>
+          <th>$/u esta vez</th><th>Hist. prom $/u</th>
+          <th>Subio</th><th>Pujas</th><th>Uds</th><th></th>
+        </tr>
+        ${todos.map(r=>`
+        <tr data-modelo="${(r.modelo||'').toLowerCase()}" data-grado="${r.grado||''}">
+          <td>${r.modelo||'N/A'}</td>
+          <td class="muted">${r.capacidad||'N/A'}</td>
+          <td>${gradeBadge(r.grado)}</td>
+          <td class="num" style="color:var(--red)">${fmtU$(r.precio_unitario_promedio)}</td>
+          <td class="num muted">${fmtU$(r.hist_avg)}</td>
+          <td><span class="badge b-red">+${r.subio_pct}%</span></td>
+          <td>${pujasBadge(r.numero_pujas)}</td>
+          <td class="muted">${r.cantidad_total||0}</td>
+          <td><a href="${bstock(r.listing_id)}" target="_blank">Ver</a></td>
+        </tr>`).join('')}
+      </table></div>`}
+  </div>`;
+}
+
+function filtrarSubieron(){
+  const q = (document.getElementById('sub-search')?.value||'').toLowerCase();
+  const g = document.getElementById('sub-grado')?.value||'';
+  let visible = 0;
+  document.querySelectorAll('#sub-table tr[data-modelo]').forEach(tr=>{
+    const show = tr.dataset.modelo.includes(q) && (g===''||tr.dataset.grado===g);
+    tr.style.display = show ? '' : 'none';
+    if(show) visible++;
+  });
+  const cnt = document.getElementById('sub-count');
+  if(cnt) cnt.textContent = visible+' lotes';
+}
+
+// ─── TAB 6: TENDENCIAS ───────────────────────────────────────────────────────
+function buildTendencias(){
+  const tend = D.tendencias || [];
+  const modelos = [...new Set(tend.map(r=>r.modelo))].sort();
+
+  document.getElementById('tab-tendencias').innerHTML = `
+  <div class="card">
+    <div class="card-title">Tendencia de precios por modelo</div>
+    <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <select id="tend-modelo" onchange="renderTendencia()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 12px;font-size:13px;">
+        ${modelos.map(m=>`<option value="${m}">${m}</option>`).join('')}
+      </select>
+      <select id="tend-grado" onchange="renderTendencia()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 12px;font-size:13px;">
+        <option value="">Todos los grados</option>
+        <option>A+(T)</option><option>AA+(T)</option><option>A(T)</option><option>B+(T)</option>
+      </select>
+    </div>
+    <div style="position:relative;height:300px;"><canvas id="chart-tend"></canvas></div>
+  </div>
+  <div class="card" id="tend-tabla">
+    <div class="card-title">Datos historicos del modelo seleccionado</div>
+    <table id="tend-table-inner"></table>
+  </div>`;
+
+  renderTendencia();
+}
+
+function renderTendencia(){
+  const tend = D.tendencias || [];
+  const modelo = document.getElementById('tend-modelo')?.value || '';
+  const grado  = document.getElementById('tend-grado')?.value  || '';
+
+  const filtrado = tend.filter(r=>
+    r.modelo===modelo &&
+    (grado===''||r.grado===grado) &&
+    r.precio_prom > 0
+  );
+
+  const caps = [...new Set(filtrado.map(r=>r.capacidad))].sort();
+  const colors = ['#4f8ef7','#34c98a','#f5a623','#f05454','#a78bfa','#2dd4bf'];
+
+  const datasets = caps.map((cap,i)=>{
+    const pts = filtrado.filter(r=>r.capacidad===cap)
+      .sort((a,b)=>a.anio-b.anio||a.semana_iso-b.semana_iso);
+    return {
+      label: cap,
+      data: pts.map(r=>({x:`Sem ${r.semana_iso}/${r.anio}`, y:r.precio_prom})),
+      borderColor: colors[i%colors.length],
+      backgroundColor: 'transparent',
+      tension:.3, pointRadius:4,
+    };
+  });
+
+  if(chartTend){ chartTend.destroy(); chartTend=null; }
+  const ctx = document.getElementById('chart-tend');
+  if(!ctx) return;
+
+  chartTend = new Chart(ctx,{
+    type:'line',
+    data:{ datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#8b8fa8',font:{size:12}}},
+        tooltip:{callbacks:{label:c=>`${c.dataset.label}: $${Number(c.parsed.y).toFixed(2)}/u`}}
+      },
+      scales:{
+        x:{ticks:{color:'#8b8fa8',font:{size:11}},grid:{color:'#2e3247'}},
+        y:{ticks:{color:'#8b8fa8',font:{size:11},callback:v=>'$'+v},grid:{color:'#2e3247'}}
+      }
+    }
+  });
+
+  // Tabla historica
+  const rows = filtrado.sort((a,b)=>b.anio-a.anio||b.semana_iso-a.semana_iso||a.capacidad.localeCompare(b.capacidad));
+  const table = document.getElementById('tend-table-inner');
+  if(table){
+    table.innerHTML = `
+    <tr><th>Semana</th><th>Dia</th><th>Capacidad</th><th>Grado</th><th>Prom $/u</th><th>Min $/u</th><th>Max $/u</th><th>Lotes</th><th>Pujas prom</th></tr>
+    ${rows.map(r=>`
+    <tr>
+      <td class="muted">Sem ${r.semana_iso}/${r.anio}</td>
+      <td class="muted">${r.dia_semana||''}</td>
+      <td>${r.capacidad||'N/A'}</td>
+      <td>${gradeBadge(r.grado)}</td>
+      <td class="num" style="color:var(--blue)">${fmtU$(r.precio_prom)}</td>
+      <td class="num" style="color:var(--green)">${fmtU$(r.precio_min)}</td>
+      <td class="num" style="color:var(--red)">${fmtU$(r.precio_max)}</td>
+      <td class="muted">${r.num_lotes||0}</td>
+      <td class="muted">${r.pujas_prom!=null?Number(r.pujas_prom).toFixed(1):'—'}</td>
+    </tr>`).join('')}`;
+  }
+}
+
+function cargar(){
+  fetch('dashboard_data.json?t='+Date.now())
+    .then(r=>r.json())
+    .then(data=>{
+      D = data;
+      const ts = data.generado_en ? new Date(data.generado_en).toLocaleString('es') : '';
+      document.getElementById('ts').textContent = 'Actualizado: '+ts;
+      buildSubasta();
+      buildPujas();
+      buildReferencia();
+      buildOportunidades();
+      buildSubieron();
+      buildTendencias();
+    })
+    .catch(()=>{ document.querySelector('main').innerHTML='<div style="text-align:center;padding:60px;color:#8b8fa8">Error cargando dashboard_data.json. Corra python analitica.py primero.</div>'; });
+}
+
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='tendencias') setTimeout(renderTendencia,50);
+  });
+});
+
+cargar();
+</script>
+</body>
+</html>
