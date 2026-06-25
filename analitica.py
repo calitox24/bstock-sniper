@@ -300,7 +300,7 @@ def tendencias_por_modelo():
                    ROUND(AVG(s.numero_pujas), 1) as pujas_prom
             FROM subastas s
             WHERE s.estado='CERRADO' AND s.precio_total > 0
-              AND s.grado IN ('A+(T)','AA+(T)','A(T)','B+(T)')
+              AND s.grado IN ('A+(T)','AA+(T)','A(T)','B+(T)','C+(T)','C(T)','B(T)')
               AND s.capacidad NOT LIKE 'MIXTO%' AND s.capacidad != 'N/A'
             GROUP BY s.modelo, s.capacidad, s.grado, s.semana_iso, s.anio, s.dia_semana
             ORDER BY s.modelo, s.capacidad, s.grado, s.anio DESC, s.semana_iso DESC
@@ -318,7 +318,7 @@ def tendencias_por_modelo():
             FROM subastas s
             JOIN lote_items li ON li.listing_id = s.listing_id
             WHERE s.estado='CERRADO' AND s.precio_total > 0
-              AND s.grado IN ('A+(T)','AA+(T)','A(T)','B+(T)')
+              AND s.grado IN ('A+(T)','AA+(T)','A(T)','B+(T)','C+(T)','C(T)','B(T)')
               AND s.capacidad LIKE 'MIXTO%'
               AND li.capacidad NOT IN ('N/A','') AND li.capacidad NOT LIKE 'MIXTO%'
             GROUP BY s.modelo, li.capacidad, s.grado, s.semana_iso, s.anio, s.dia_semana
@@ -336,7 +336,7 @@ def tendencias_por_modelo():
                    ROUND(AVG(s.numero_pujas), 1) as pujas_prom
             FROM subastas s
             WHERE s.estado='CERRADO' AND s.precio_total > 0
-              AND s.grado IN ('A+(T)','AA+(T)','A(T)','B+(T)')
+              AND s.grado IN ('A+(T)','AA+(T)','A(T)','B+(T)','C+(T)','C(T)','B(T)')
               AND s.capacidad = 'N/A'
             GROUP BY s.modelo, s.grado, s.semana_iso, s.anio, s.dia_semana
             ORDER BY s.modelo, s.grado, s.anio DESC, s.semana_iso DESC
