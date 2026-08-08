@@ -16,7 +16,12 @@ if not os.path.exists(_ids_file):
     )
     if _candidatos:
         _ids_file = _candidatos[0]
-        print(f"WARN: No hay IDs de hoy, usando: {_ids_file}")
+        _fecha_ids = date.fromisoformat(_candidatos[0][4:14])
+        _dias = (date.today() - _fecha_ids).days
+        print(f"WARN: No hay IDs de hoy, usando {_ids_file} ({_dias} dias de antiguedad)")
+        if _dias > 1:
+            print(f"WARN: Los lotes de hace {_dias} dias ya expiraron en BStock y la captura "
+                  f"fallara con SIN_LOTE. Ejecuta fetch_ids_api.py para regenerar la lista.")
     else:
         raise FileNotFoundError("No se encontro ningun ids_*.txt. Ejecuta fetch_ids_api.py primero.")
 
