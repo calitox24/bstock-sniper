@@ -24,6 +24,15 @@ Graphify → localizar flujo/dependencias → leer archivos implicados → diagn
 PROHIBIDO comenzar una tarea haciendo búsquedas masivas por todo el repositorio
 si Graphify puede localizar primero el código relevante.
 
+Si `graphify` no esta en el PATH (pasa en las sesiones web: el contenedor
+viene limpio), instalalo antes de seguir, no ignores la regla:
+
+    uv tool install graphifyy && export PATH="$HOME/.local/bin:$PATH"
+
+El grafo ya esta versionado en graphify-out/, asi que queda consultable
+apenas termina la instalacion.
+
+
 ---
 
 # BStock Analytics — Contexto del Proyecto

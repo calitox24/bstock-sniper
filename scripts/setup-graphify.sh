@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Configura graphify en ESTE clon del repo. Correr una vez por clon.
 #
+# Solo hace falta en un clon de ESCRITORIO con terminal. Las sesiones web
+# de Claude Code no lo necesitan: ahi no hay commits locales, asi que los
+# hooks de git nunca disparan (ver la nota de instalacion en CLAUDE.md).
+#
 # Los hooks de git viven versionados en .githooks/, pero git no los usa
 # hasta que cada clon apunta core.hooksPath ahi: eso no se versiona, por
 # eso hace falta este script.
