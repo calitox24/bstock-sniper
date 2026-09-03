@@ -35,25 +35,34 @@ Las subastas son **martes y jueves**. Se capturan lotes de iPhones/Android con p
 ## Flujo actual
 ```
 Martes/Jueves mañana:
-  python fetch_ids_api.py <TOKEN>   → ids_{fecha}.txt  (lista de IDs)
-  python export_subasta_excel.py <TOKEN>  → subasta_{fecha}.xlsx
+  python pipeline.py inicio         → ids_{fecha}.txt + subasta_{fecha}.xlsx
+  (o por separado: python fetch_ids_api.py / python export_subasta_excel.py)
 
 Tarde (cuando cierran las subastas):
-  python run.py MARTES              → captura + analítica + dashboard_data.json
+  python pipeline.py cierre         → captura + analítica + dashboard_data.json
+  (equivalente antiguo: python run.py MARTES)
   Abrir dashboard.html en el navegador
+
+Verbos de pipeline.py (L376-400): inicio | cierre | estado | capturar
+  estado                       -> que hay capturado hoy
+  capturar <ids_file> [fecha]  -> recaptura lotes de una fecha anterior
+
+Ningun script pide el token por argumento: todos leen las cookies de Firefox.
 ```
 
 ## Autenticación
 - **Firefox** debe estar abierto y logueado en bstock.com
 - `captura.py` lee automáticamente `bstock_access_token` de las cookies de Firefox (sin pegar tokens)
-- `fetch_ids_api.py` y `export_subasta_excel.py` aún piden el token por argumento → **pendiente migrar a cookies Firefox**
+- `fetch_ids_api.py` (L74) y `export_subasta_excel.py` (L229) tambien leen las cookies solos. Ninguno acepta el token por argumento: si se lo pasas, se ignora.
 
 ## Archivos clave
 | Archivo | Qué hace |
 |---------|----------|
 | `captura.py` | Scraper principal. Lee cookies Firefox, descarga cada lote, guarda en SQLite + CSV |
 | `analitica.py` | Genera `dashboard_data.json` con tendencias, alertas, comparativa mar/jue |
-| `run.py` | Orquestador: `python run.py MARTES` o `python run.py JUEVES` |
+| `pipeline.py` | Orquestador actual: `inicio` \| `cierre` \| `estado` \| `capturar`. Lee cookies Firefox |
+| `run.py` | Orquestador anterior: `python run.py MARTES` o `python run.py JUEVES` |
+| `check.py` | Consulta rapida: lotes por modelo y grado. `python check.py "11 Pro Max"` |
 | `config.py` | Lee ACCOUNT_ID, DB_PATH, y LISTING_IDS del archivo `ids_{fecha}.txt` |
 | `schema.sql` | Esquema SQLite: tablas `subastas` y `lote_items` |
 | `dashboard.html` | Dashboard estático (Chart.js) que lee `dashboard_data.json` |
@@ -78,11 +87,29 @@ STOREFRONT_ID = "67ec2a5fee190bcb0e7469af" # fijo, en fetch_ids_api y export_exc
 - `https://auction.bstock.com/v1/auctions/by-listing-id/{id}` → precio de cierre
 - `https://search.bstock.com/v1/all-listings/listings` → búsqueda paginada (POST)
 
-## Mejoras pendientes
-1. **Pipeline automático**: unificar fetch_ids + export_excel + captura en `pipeline.py inicio` / `pipeline.py cierre`
-2. **Cookies Firefox en todos los scripts**: `fetch_ids_api.py` y `export_subasta_excel.py` deben leer cookies como `captura.py`
-3. **Scheduler Windows**: Task Scheduler para correr el pipeline automáticamente mar/jue
-4. **Actualizar config.py dinámicamente**: que detecte el archivo `ids_{fecha_hoy}.txt` sin editar el archivo a mano
+## Estado de las mejoras (verificado 2026-09-03)
+Las cuatro que figuraban como pendientes ya estan hechas:
+
+1. **Pipeline automático** — HECHO. `pipeline.py` tiene `fase_inicio()` (L135),
+   `fase_cierre()` (L184) y `fase_capturar()` (L320).
+2. **Cookies Firefox en todos los scripts** — HECHO. `leer_cookies_firefox()`
+   esta en `fetch_ids_api.py` (L18), `export_subasta_excel.py` (L21),
+   `cruce_subasta.py` (L11), `captura.py` (L27) y `pipeline.py` (L23).
+   Ya no hace falta pasar el token por argumento.
+3. **Scheduler Windows** — HECHO. Ver `setup_scheduler.py`.
+4. **config.py dinámico** — HECHO. `config.py` (L9) detecta
+   `ids_{fecha_hoy}.txt` y si no existe usa el `ids_*.txt` mas reciente
+   avisando con un WARN.
+
+Pendiente de verdad:
+- `captura_backup.py` NO es copia de `captura.py`: es una version anterior
+  que fecha los lotes con `datetime.now()` en vez de derivar la fecha del
+  `actualEndTime` convertido a hora del Este. Nadie lo importa. Sus simbolos
+  se llaman igual que los de `captura.py`, asi que duplica nodos en el grafo
+  y hace ambiguo `graphify explain "BStockCaptura"`. Si ya no lo necesitas,
+  borralo (git conserva la historia); si lo queres conservar, agregalo a
+  `.graphifyignore` para sacarlo del grafo sin borrarlo.
+- La base `bstock_analytics.db`, los `.csv` y los `.xlsx` estan versionados.
 
 ## Datos actuales
 - 353 lotes capturados, 101 modelos, ~29,738 unidades (junio 2026)

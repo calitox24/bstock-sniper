@@ -1,0 +1,6 @@
+# La documentacion del propio graphify no es parte de este proyecto:
+# sin esto mete ~60 nodos de su SKILL.md y references/ en el grafo.
+.claude/
+
+# Salida del propio graphify.
+graphify-out/
