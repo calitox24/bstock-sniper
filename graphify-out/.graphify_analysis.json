@@ -1,0 +1,458 @@
+{
+  "communities": {
+    "0": [
+      "bstock_sniper_mini_v06_user",
+      "bstock_sniper_mini_v06_user_addcurrentauctiontovista360",
+      "bstock_sniper_mini_v06_user_boot",
+      "bstock_sniper_mini_v06_user_bridgeget",
+      "bstock_sniper_mini_v06_user_bridgepost",
+      "bstock_sniper_mini_v06_user_bridgetick",
+      "bstock_sniper_mini_v06_user_createpanel",
+      "bstock_sniper_mini_v06_user_findbidinput",
+      "bstock_sniper_mini_v06_user_findconfirmbutton",
+      "bstock_sniper_mini_v06_user_findraisebutton",
+      "bstock_sniper_mini_v06_user_formattime",
+      "bstock_sniper_mini_v06_user_getcurrentbid",
+      "bstock_sniper_mini_v06_user_getcurrentmax",
+      "bstock_sniper_mini_v06_user_getnextminbid",
+      "bstock_sniper_mini_v06_user_getqty",
+      "bstock_sniper_mini_v06_user_getrealstatus",
+      "bstock_sniper_mini_v06_user_getsecondsleft",
+      "bstock_sniper_mini_v06_user_gettext",
+      "bstock_sniper_mini_v06_user_gettitle",
+      "bstock_sniper_mini_v06_user_getvisibleunitprice",
+      "bstock_sniper_mini_v06_user_isvisible",
+      "bstock_sniper_mini_v06_user_load",
+      "bstock_sniper_mini_v06_user_loadvista360",
+      "bstock_sniper_mini_v06_user_log",
+      "bstock_sniper_mini_v06_user_money",
+      "bstock_sniper_mini_v06_user_money2",
+      "bstock_sniper_mini_v06_user_parsemoneyus",
+      "bstock_sniper_mini_v06_user_parsetimetexttoseconds",
+      "bstock_sniper_mini_v06_user_placebid",
+      "bstock_sniper_mini_v06_user_readstate",
+      "bstock_sniper_mini_v06_user_realclick",
+      "bstock_sniper_mini_v06_user_render",
+      "bstock_sniper_mini_v06_user_reportresult",
+      "bstock_sniper_mini_v06_user_save",
+      "bstock_sniper_mini_v06_user_savevista360",
+      "bstock_sniper_mini_v06_user_setnativevalue",
+      "bstock_sniper_mini_v06_user_setpanellog",
+      "bstock_sniper_mini_v06_user_settext",
+      "bstock_sniper_mini_v06_user_tick",
+      "bstock_sniper_mini_v06_user_wait"
+    ],
+    "1": [
+      "temp_check",
+      "temp_check_bstock",
+      "temp_check_buildoportunidades",
+      "temp_check_buildpujas",
+      "temp_check_buildpujas_getsubio",
+      "temp_check_buildpujas_inputcfg",
+      "temp_check_buildpujas_rowspujas",
+      "temp_check_buildpujas_sniperrows",
+      "temp_check_buildreferencia",
+      "temp_check_buildsubasta",
+      "temp_check_buildsubieron",
+      "temp_check_buildtendencias",
+      "temp_check_cargar",
+      "temp_check_filtrarpujas",
+      "temp_check_filtrarref",
+      "temp_check_filtrarsubieron",
+      "temp_check_fmt",
+      "temp_check_fmtcountdown",
+      "temp_check_fmtpct",
+      "temp_check_fmtu",
+      "temp_check_getsnipercfg",
+      "temp_check_gradebadge",
+      "temp_check_parsecierreet",
+      "temp_check_pujasbadge",
+      "temp_check_rendertendencia",
+      "temp_check_savesnipercfg",
+      "temp_check_sniperdisparar",
+      "temp_check_snipermotivo",
+      "temp_check_sniperpollresult",
+      "temp_check_snipersetresult",
+      "temp_check_updatesniperrow"
+    ],
+    "2": [
+      "captura",
+      "captura_agrupar_por_capacidad",
+      "captura_bstockcaptura",
+      "captura_bstockcaptura_capacidad_resumen",
+      "captura_bstockcaptura_capturar",
+      "captura_bstockcaptura_exportar_csv",
+      "captura_bstockcaptura_get_winning_bid",
+      "captura_bstockcaptura_guardar",
+      "captura_bstockcaptura_init",
+      "captura_bstockcaptura_init_db",
+      "captura_bstockcaptura_make_session",
+      "captura_get_listing_data",
+      "captura_get_manifest_items",
+      "captura_leer_cookies_firefox",
+      "captura_main",
+      "captura_parsear_capacidad",
+      "captura_rationale_123",
+      "captura_rationale_59",
+      "captura_rationale_85",
+      "config",
+      "export_historico_excel",
+      "export_historico_excel_exportar",
+      "test_endtime",
+      "test_fields"
+    ],
+    "3": [
+      "export_subasta_excel",
+      "export_subasta_excel_build_excel",
+      "export_subasta_excel_capacity_str",
+      "export_subasta_excel_fetch_all",
+      "export_subasta_excel_fetch_page",
+      "export_subasta_excel_grade_str",
+      "export_subasta_excel_leer_cookies_firefox",
+      "export_subasta_excel_lot_id_str",
+      "export_subasta_excel_main",
+      "export_subasta_excel_model_str",
+      "pipeline",
+      "pipeline_fase_capturar",
+      "pipeline_fase_cierre",
+      "pipeline_fase_estado",
+      "pipeline_fase_inicio",
+      "pipeline_fetch_todos_los_listings",
+      "pipeline_hacer_session",
+      "pipeline_hay_subasta_hoy",
+      "pipeline_leer_cookies_firefox",
+      "pipeline_migrar_bd",
+      "pipeline_rationale_321",
+      "pipeline_rationale_64",
+      "pipeline_rationale_89"
+    ],
+    "4": [
+      "captura_backup",
+      "captura_backup_agrupar_por_capacidad",
+      "captura_backup_bstockcaptura",
+      "captura_backup_bstockcaptura_capacidad_resumen",
+      "captura_backup_bstockcaptura_capturar",
+      "captura_backup_bstockcaptura_exportar_csv",
+      "captura_backup_bstockcaptura_get_winning_bid",
+      "captura_backup_bstockcaptura_guardar",
+      "captura_backup_bstockcaptura_init",
+      "captura_backup_bstockcaptura_init_db",
+      "captura_backup_bstockcaptura_make_session",
+      "captura_backup_get_listing_data",
+      "captura_backup_get_manifest_items",
+      "captura_backup_leer_cookies_firefox",
+      "captura_backup_main",
+      "captura_backup_parsear_capacidad",
+      "captura_backup_rationale_130",
+      "captura_backup_rationale_59",
+      "captura_backup_rationale_89"
+    ],
+    "5": [
+      "analitica",
+      "analitica_enriquecer_capacidad",
+      "analitica_generar_reporte_json",
+      "analitica_get_conn",
+      "analitica_mis_pujas_perdidas",
+      "analitica_oportunidades",
+      "analitica_rationale_167",
+      "analitica_rationale_18",
+      "analitica_rationale_235",
+      "analitica_rationale_290",
+      "analitica_rationale_349",
+      "analitica_rationale_45",
+      "analitica_referencia_precios",
+      "analitica_resumen_general",
+      "analitica_tendencias_por_modelo",
+      "analitica_ultima_subasta",
+      "run",
+      "run_main"
+    ],
+    "6": [
+      "server",
+      "server_handler",
+      "server_handler_cors",
+      "server_handler_do_get",
+      "server_handler_do_options",
+      "server_handler_do_post",
+      "server_handler_json",
+      "server_handler_log_message",
+      "server_handler_read_body",
+      "simplehttprequesthandler"
+    ],
+    "7": [
+      "fetch_mis_pujas",
+      "fetch_mis_pujas_extract_bids_data",
+      "fetch_mis_pujas_fetch_page",
+      "fetch_mis_pujas_get_firefox_token",
+      "fetch_mis_pujas_main",
+      "fetch_mis_pujas_normalizar",
+      "fetch_mis_pujas_rationale_65"
+    ],
+    "8": [
+      "importar_csv",
+      "importar_csv_extraer_capacidad",
+      "importar_csv_extraer_listing_id",
+      "importar_csv_importar_csv",
+      "importar_csv_rationale_15",
+      "importar_csv_rationale_20",
+      "importar_csv_rationale_32"
+    ],
+    "9": [
+      "sniper_bridge",
+      "sniper_bridge_bridgeget",
+      "sniper_bridge_bridgepost",
+      "sniper_bridge_bridgetick",
+      "sniper_bridge_reportresult"
+    ],
+    "10": [
+      "cruce_subasta",
+      "cruce_subasta_fetch_all_ids",
+      "cruce_subasta_leer_cookies_firefox",
+      "cruce_subasta_main"
+    ],
+    "11": [
+      "fetch_ids_api",
+      "fetch_ids_api_fetch_page",
+      "fetch_ids_api_leer_cookies_firefox",
+      "fetch_ids_api_main"
+    ],
+    "12": [
+      "schema",
+      "schema_lote_items",
+      "schema_subastas"
+    ],
+    "13": [
+      "setup_scheduler",
+      "setup_scheduler_crear_tarea",
+      "setup_scheduler_eliminar_tarea"
+    ],
+    "14": [
+      "extraer_ids",
+      "extraer_ids_extraer_ids_desde_csv"
+    ],
+    "15": [
+      "borrar_duplicados_viernes"
+    ],
+    "16": [
+      "check"
+    ],
+    "17": [
+      "check_bd"
+    ],
+    "18": [
+      "check_items_iphone11"
+    ],
+    "19": [
+      "debug_bd"
+    ],
+    "20": [
+      "debug_bids"
+    ],
+    "21": [
+      "debug_bids2"
+    ],
+    "22": [
+      "debug_bids3"
+    ],
+    "23": [
+      "find_bids2"
+    ],
+    "24": [
+      "find_bids_endpoint"
+    ],
+    "25": [
+      "fix_dia_semana"
+    ],
+    "26": [
+      "fix_estados"
+    ],
+    "27": [
+      "fix_estados2"
+    ],
+    "28": [
+      "fix_fechas_et"
+    ],
+    "29": [
+      "fix_retirados"
+    ],
+    "30": [
+      "limpiar_duplicados"
+    ],
+    "31": [
+      "marcar_retirados"
+    ],
+    "32": [
+      "marcar_uno_retirado"
+    ],
+    "33": [
+      "test_manifest"
+    ]
+  },
+  "cohesion": {
+    "0": 0.14615384615384616,
+    "1": 0.16129032258064516,
+    "2": 0.13405797101449277,
+    "3": 0.16205533596837945,
+    "4": 0.16374269005847952,
+    "5": 0.21568627450980393,
+    "6": 0.3111111111111111,
+    "7": 0.47619047619047616,
+    "8": 0.38095238095238093,
+    "9": 0.7,
+    "10": 0.8333333333333334,
+    "11": 0.8333333333333334,
+    "12": 1.0,
+    "13": 0.6666666666666666,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0,
+    "24": 1.0,
+    "25": 1.0,
+    "26": 1.0,
+    "27": 1.0,
+    "28": 1.0,
+    "29": 1.0,
+    "30": 1.0,
+    "31": 1.0,
+    "32": 1.0,
+    "33": 1.0
+  },
+  "gods": [
+    {
+      "id": "captura_bstockcaptura",
+      "label": "BStockCaptura",
+      "degree": 15
+    },
+    {
+      "id": "bstock_sniper_mini_v06_user_placebid",
+      "label": "placeBid()",
+      "degree": 14
+    },
+    {
+      "id": "bstock_sniper_mini_v06_user_readstate",
+      "label": "readState()",
+      "degree": 14
+    },
+    {
+      "id": "bstock_sniper_mini_v06_user_createpanel",
+      "label": "createPanel()",
+      "degree": 11
+    },
+    {
+      "id": "analitica_generar_reporte_json",
+      "label": "generar_reporte_json()",
+      "degree": 11
+    },
+    {
+      "id": "captura_backup_bstockcaptura",
+      "label": "BStockCaptura",
+      "degree": 10
+    },
+    {
+      "id": "bstock_sniper_mini_v06_user_render",
+      "label": "render()",
+      "degree": 10
+    },
+    {
+      "id": "server_handler",
+      "label": "Handler",
+      "degree": 9
+    },
+    {
+      "id": "bstock_sniper_mini_v06_user_bridgetick",
+      "label": "bridgeTick()",
+      "degree": 9
+    },
+    {
+      "id": "temp_check_buildpujas_sniperrows",
+      "label": "sniperRows()",
+      "degree": 9
+    }
+  ],
+  "surprises": [
+    {
+      "source": "fase_capturar()",
+      "target": "BStockCaptura",
+      "source_files": [
+        "pipeline.py",
+        "captura.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "fase_cierre()",
+      "target": "BStockCaptura",
+      "source_files": [
+        "pipeline.py",
+        "captura.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "main()",
+      "target": "BStockCaptura",
+      "source_files": [
+        "run.py",
+        "captura.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "fase_cierre()",
+      "target": "generar_reporte_json()",
+      "source_files": [
+        "pipeline.py",
+        "analitica.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "fase_cierre()",
+      "target": "build_excel()",
+      "source_files": [
+        "pipeline.py",
+        "export_subasta_excel.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `BStockCaptura` connect `Community 2` to `Community 3`, `Community 5`?",
+      "why": "High betweenness centrality (0.051) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `generar_reporte_json()` connect `Community 5` to `Community 3`?",
+      "why": "High betweenness centrality (0.032) - this node is a cross-community bridge."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 0` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.14615384615384616 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 2` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.13405797101449277 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

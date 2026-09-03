@@ -1,0 +1,8 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Salidas locales de graphify (regenerables, contienen rutas absolutas)
+graphify-out/cache/
+graphify-out/manifest.json
+graphify-out/.graphify_root
