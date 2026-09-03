@@ -64,7 +64,41 @@ git clone https://github.com/calitox24/MiniKommoRD
 git clone https://github.com/calitox24/MiniKommoRD-backend
 ```
 
+## 4b. Pasarse a la rama (IMPRESCINDIBLE)
+
+Un clone te deja en `main`, y todo esto (`.githooks/`, `scripts/`,
+`graphify-out/`) vive en la rama `claude/graphify-repo-gags80` mientras no
+este mergeada. En `main` esos archivos no existen.
+
+`graphify-out/` esta versionado en la rama, asi que si ya generaste uno a
+mano el checkout falla con "untracked working tree files would be
+overwritten". Por eso se borra primero: el de la rama lo reemplaza.
+
+```bash
+BR=claude/graphify-repo-gags80
+for r in ~/bstock-sniper ~/MiniKommoRD ~/MiniKommoRD-backend; do
+  cd "$r" || continue
+  rm -rf graphify-out          # solo si no esta trackeado todavia
+  git fetch origin "$BR"
+  git checkout "$BR" || echo "FALLO el checkout en $r"
+done
+```
+
+Comprobar que quedo bien antes de seguir:
+
+```bash
+for r in ~/bstock-sniper ~/MiniKommoRD ~/MiniKommoRD-backend; do
+  cd "$r"
+  echo "$r -> $(git branch --show-current) | githooks: $([ -d .githooks ] && echo SI || echo NO)"
+done
+```
+
+Los tres tienen que decir `claude/graphify-repo-gags80` y `githooks: SI`.
+Si ya mergeaste la rama a `main`, saltea este paso entero.
+
 ## 5. Activar graphify en cada repo
+
+(Requiere el paso 4b: el script no existe en `main`.)
 
 ```bash
 for r in bstock-sniper MiniKommoRD MiniKommoRD-backend; do
@@ -99,5 +133,9 @@ git log -1 --stat
 | `externally-managed-environment` | Falta `--break-system-packages` en el `pip install uv`. |
 | El hook no dispara | `git config --get core.hooksPath` tiene que decir `.githooks`. Si no, corre `scripts/setup-graphify.sh`. |
 | Compila tree-sitter en vez de bajar wheels | Estas en Termux nativo, no dentro de Debian. Corre `proot-distro login debian`. |
+| `scripts/setup-graphify.sh: No such file` o `.githooks: NO` | Estas en `main`. Ver paso 4b. |
+| `graphify-out/graph.json` no existe | Idem: el grafo esta versionado en la rama, no en `main`. |
+| `error: no LLM API key found` | `graphify .` intenta leer tambien los .md. Usa `graphify extract . --code-only` (AST local, sin API key). |
+| `checkout` falla por "untracked working tree files" | Tenes un `graphify-out/` generado a mano. Borralo: el de la rama lo reemplaza. |
 
 Desactivar el hook un rato: `GRAPHIFY_SKIP_HOOK=1 git commit ...`
