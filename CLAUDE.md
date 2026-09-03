@@ -1,3 +1,31 @@
+# REGLA OBLIGATORIA — GRAPHIFY FIRST
+
+Este proyecto usa Graphify para reducir consumo de contexto/tokens.
+
+Antes de explorar el repositorio, buscar archivos relacionados o leer múltiples
+archivos, SIEMPRE consulta primero Graphify.
+
+Flujo obligatorio:
+
+1. Ejecuta una consulta Graphify relacionada con la tarea.
+2. Identifica únicamente los archivos, símbolos y dependencias relevantes.
+3. Lee solamente esos archivos.
+4. No recorras src/ completo.
+5. No leas archivos grandes "por si acaso".
+6. No vuelvas a leer archivos que ya están en el contexto.
+7. Amplía la búsqueda únicamente si Graphify no proporciona información suficiente.
+
+Para cambios pequeños:
+Graphify → archivos afectados → editar → verificar.
+
+Para bugs:
+Graphify → localizar flujo/dependencias → leer archivos implicados → diagnosticar → editar.
+
+PROHIBIDO comenzar una tarea haciendo búsquedas masivas por todo el repositorio
+si Graphify puede localizar primero el código relevante.
+
+---
+
 # BStock Analytics — Contexto del Proyecto
 
 ## Qué hace este sistema
@@ -60,3 +88,13 @@ STOREFRONT_ID = "67ec2a5fee190bcb0e7469af" # fijo, en fetch_ids_api y export_exc
 - 353 lotes capturados, 101 modelos, ~29,738 unidades (junio 2026)
 - Múltiples capturas del 17-Jun-2026 en los CSV
 - Dashboard funcional con tabs: Alertas, Histórico, Tendencias, Mar vs Jue, Por Capacidad
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
