@@ -70,19 +70,25 @@ Un clone te deja en `main`, y todo esto (`.githooks/`, `scripts/`,
 `graphify-out/`) vive en la rama `claude/graphify-repo-gags80` mientras no
 este mergeada. En `main` esos archivos no existen.
 
-`graphify-out/` esta versionado en la rama, asi que si ya generaste uno a
-mano el checkout falla con "untracked working tree files would be
-overwritten". Por eso se borra primero: el de la rama lo reemplaza.
+Si ya corriste graphify en el clon, genero archivos que la rama tambien
+trae versionados, y el checkout aborta con "untracked working tree files
+would be overwritten". Son dos, y ninguno se pierde al borrarlos porque el
+de la rama es igual o mejor:
+
+- `graphify-out/`   lo crea `graphify extract`
+- `.gitattributes`  lo crea `graphify hook install`
 
 ```bash
 BR=claude/graphify-repo-gags80
 for r in ~/bstock-sniper ~/MiniKommoRD ~/MiniKommoRD-backend; do
   cd "$r" || continue
-  rm -rf graphify-out          # solo si no esta trackeado todavia
-  git fetch origin "$BR"
-  git checkout "$BR" || echo "FALLO el checkout en $r"
+  rm -rf graphify-out .gitattributes
+  git fetch origin "$BR" && git checkout "$BR" && echo "OK $r" || echo "FALLO en $r"
 done
 ```
+
+Si aun asi se queja de otro archivo, git te dice el nombre: es otro generado
+por graphify. Borralo y volve a correr el bucle.
 
 Comprobar que quedo bien antes de seguir:
 
@@ -117,13 +123,21 @@ graphify query "como se capturan los lotes"
 graphify god-nodes --top 5
 ```
 
-Y que el hook dispare de verdad:
+Y que el hook dispare de verdad. Tiene que ser un commit **con cambios
+reales**: el hook mira que archivos cambiaron y con un `--allow-empty` no
+hace nada, con razon.
 
 ```bash
-git commit --allow-empty -m "prueba hook"
+printf 'def prueba_hook():\n    return 42\n' > prueba_hook.py
+git add prueba_hook.py && git commit -m "prueba hook"
 # tiene que imprimir: [graphify hook] launching background rebuild
-git log -1 --stat
+sleep 25
+grep -c prueba_hook graphify-out/graph.json    # > 0 significa que funciono
+git rm -f prueba_hook.py && git commit -m "quitar prueba"
 ```
+
+El rebuild corre en segundo plano; el log esta en
+`~/.cache/graphify-rebuild.log`.
 
 ## Si algo falla
 
@@ -136,6 +150,6 @@ git log -1 --stat
 | `scripts/setup-graphify.sh: No such file` o `.githooks: NO` | Estas en `main`. Ver paso 4b. |
 | `graphify-out/graph.json` no existe | Idem: el grafo esta versionado en la rama, no en `main`. |
 | `error: no LLM API key found` | `graphify .` intenta leer tambien los .md. Usa `graphify extract . --code-only` (AST local, sin API key). |
-| `checkout` falla por "untracked working tree files" | Tenes un `graphify-out/` generado a mano. Borralo: el de la rama lo reemplaza. |
+| `checkout` falla por "untracked working tree files" | Corriste graphify antes del checkout. Borra `graphify-out/` y `.gitattributes` (los genera graphify y la rama los trae). Ver paso 4b. |
 
 Desactivar el hook un rato: `GRAPHIFY_SKIP_HOOK=1 git commit ...`
