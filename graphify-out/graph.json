@@ -1159,18 +1159,6 @@
       "source_location": "L17"
     },
     {
-      "id": "run_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "BStockCaptura",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "run.py",
-      "source_location": "L13"
-    },
-    {
       "id": "export_subasta_excel_build_excel",
       "label": "build_excel()",
       "_callable": true,
@@ -1663,6 +1651,18 @@
       "source_location": "L44"
     },
     {
+      "id": "run_main",
+      "label": "main()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "analitica.py",
+      "file_type": "code",
+      "norm_label": "main()",
+      "source_file": "run.py",
+      "source_location": "L13"
+    },
+    {
       "id": "server_handler_cors",
       "label": "._cors()",
       "_callable": true,
@@ -2086,17 +2086,6 @@
       "file_type": "code",
       "norm_label": "export_historico_excel.py",
       "source_file": "export_historico_excel.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "run",
-      "label": "run.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "BStockCaptura",
-      "file_type": "code",
-      "norm_label": "run.py",
-      "source_file": "run.py",
       "source_location": "L1"
     },
     {
@@ -2816,6 +2805,36 @@
       "source_location": "L89"
     },
     {
+      "id": "scripts_setup_graphify",
+      "label": "setup-graphify.sh",
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "setup-graphify.sh",
+      "file_type": "code",
+      "metadata": {
+        "language": "bash",
+        "kind": "file"
+      },
+      "norm_label": "setup-graphify.sh",
+      "source_file": "scripts/setup-graphify.sh",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_setup_graphify_sh__entry",
+      "label": "setup-graphify.sh script",
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "setup-graphify.sh",
+      "file_type": "code",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_entrypoint"
+      },
+      "norm_label": "setup-graphify.sh script",
+      "source_file": "scripts/setup-graphify.sh",
+      "source_location": "L1"
+    },
+    {
       "id": "analitica",
       "label": "analitica.py",
       "_origin": "ast",
@@ -2824,6 +2843,17 @@
       "file_type": "code",
       "norm_label": "analitica.py",
       "source_file": "analitica.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "run",
+      "label": "run.py",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "analitica.py",
+      "file_type": "code",
+      "norm_label": "run.py",
+      "source_file": "run.py",
       "source_location": "L1"
     },
     {
@@ -6980,6 +7010,17 @@
       "weight": 1.0
     },
     {
+      "source": "scripts_setup_graphify",
+      "target": "scripts_setup_graphify_sh__entry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/setup-graphify.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
       "source": "server",
       "target": "server_handler",
       "relation": "contains",
@@ -7899,5 +7940,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c81f8758153d54b0280b5ad6ade20ea463884419"
+  "built_at_commit": "17fd3f46fc1586199e479a774d870c41b1801779"
 }

@@ -4,3 +4,6 @@
 
 # Salida del propio graphify.
 graphify-out/
+
+# Hooks generados por graphify: son suyos, no codigo del proyecto.
+.githooks/
